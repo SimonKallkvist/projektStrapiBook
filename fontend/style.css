@@ -1,1 +1,96 @@
 /* -_- */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  outline: none;
+  border: none;
+}
+
+body {
+  height: 3000px;
+}
+
+nav {
+  width: 100%;
+  min-height: 100px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 32px;
+  background: lightblue;
+  position: fixed;
+  top: 0;
+}
+
+/* Header Styling */
+
+.header {
+  height: 80vh;
+  max-width: 1440px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-image: url(https://images.squarespace-cdn.com/content/v1/5f9f625ebb288273ba51c6ec/3f516f33-b97f-494c-a41b-173a4f9648e0/Unknown-6.jpg);
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+.header .loginForm {
+  background-color: rgba(255, 255, 255, 0.15);
+  background-color: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(5px);
+  padding: 24px 32px;
+  margin-top: 32px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  box-shadow: 2px 2px 4px 2px rgba(0, 0, 0, 0.6);
+}
+
+.loginForm input {
+  padding: 8px 16px;
+  border-radius: 4px;
+}
+
+.loginForm h3 {
+  margin-bottom: 16px;
+  color: #fff;
+}
+
+.btn {
+  padding: 8px 16px;
+  border-radius: 4px;
+  background: #fff;
+  width: 100%;
+  color: #000;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
+
+.btn:hover {
+  background: rgb(128, 240, 206);
+  /* border: 1px solid black; */
+  color: white;
+}
+
+.loginForm .btn {
+  flex-grow: 1;
+}
+
+.registerUser,
+.loginUser {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+
+  align-items: center;
+  justify-items: stretch;
+}
+
+/* OverArching supers */
+.hidden {
+  display: none;
+}

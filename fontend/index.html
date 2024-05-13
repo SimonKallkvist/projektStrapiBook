@@ -9,5 +9,63 @@
     <script src="index.js" defer></script>
     <link rel="stylesheet" href="style.css" />
   </head>
-  <body></body>
+  <body>
+    <nav>
+      <!-- Create a navBar esq thing,  -->
+      <a href="#" id="navLogo">SamuraiHeaven</a>
+      <div class="userInfo hidden"></div>
+    </nav>
+    <header>
+      <div class="header">
+        <h1>Welcome to Samurai Heaven!</h1>
+        <h2>your place for all samurai highlights and books</h2>
+        <div class="loginForm">
+          <h3>Login / register</h3>
+          <div class="loginUser">
+            <input
+              type="text"
+              name="username"
+              id="userName"
+              placeholder="username or email"
+            />
+            <input
+              type="password"
+              name="password"
+              id="password"
+              placeholder="password"
+            />
+            <button class="btn loginUser">Login</button>
+            <button class="btn registerUserBtn">Register?</button>
+          </div>
+          <div class="registerUser hidden">
+            <input
+              type="text"
+              name="username"
+              id="registerUserName"
+              placeholder="username"
+            />
+            <input
+              type="text"
+              name="email"
+              id="registerEmail"
+              placeholder="email"
+            />
+            <input
+              type="password"
+              name="password"
+              id="registerPassword"
+              placeholder="password"
+            />
+            <input
+              type="password"
+              name="repeatPassword"
+              id="repeatPassword"
+              placeholder="repeat password"
+            />
+            <button class="btn createUser">Create user</button>
+          </div>
+        </div>
+      </div>
+    </header>
+  </body>
 </html>
