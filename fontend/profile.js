@@ -17,9 +17,60 @@ let setProfile = async () => {
       '?populate=*'
   );
   //   let user = sessionStorage.getItem(JSON.parse('user'));
-
+  console.log(profile.data);
   setNavbar();
-  console.log(profile);
+
+  let userDisplay = document.querySelector('.userDisplay');
+
+  let userPic = document.createElement('userPic');
+  userPic.classList.add('userPic');
+
+  let userPicName = document.createElement('h2');
+  userPicName.innerText = profile.data.username;
+  userPic.append(userPicName);
+
+  let markedBooks = profile.data.books.length;
+
+  let amountOfBooks = document.createElement('h3');
+  amountOfBooks.innerText = markedBooks + 'books in "must read"';
+
+  userDisplay.append(userPic, amountOfBooks);
+
+  profile.data.books.map((book) => {
+    renderSavedBooks(book);
+  });
+};
+
+// Render the saved books
+let renderSavedBooks = async (book) => {
+  //   console.log(book);
+  let savedBooks = document.querySelector('.savedBooks');
+  let card = document.createElement('div');
+  card.classList.add('card');
+
+  let bookSrc = await getData(
+    'http://localhost:1337/api/books/' + book.id + '?populate=*'
+  );
+  let bookCover = document.createElement('img');
+  bookCover.src =
+    'http://localhost:1337' +
+    bookSrc.data.data.attributes.cover.data.attributes.url;
+  let cardDiv = document.createElement('div');
+  let title = document.createElement('h3');
+  title.innerText = book.title;
+
+  let author = document.createElement('h4');
+  author.innerText = book.author;
+
+  let pages = document.createElement('p');
+  pages.innerText = book.pages + ' pages';
+
+  let year = document.createElement('p');
+  year.innerText = 'Release: ' + book.date;
+
+  cardDiv.append(title, author, pages, year);
+  card.append(bookCover, cardDiv);
+  savedBooks.append(card);
 };
 
 //Setup the navBar

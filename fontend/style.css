@@ -173,3 +173,108 @@ nav {
 .hidden {
   display: none;
 }
+
+/* Profile page styöling */
+
+.profileDisplay {
+  --sz: 10px; /*** size ***/
+  --c0: #3a1b0f;
+  --c1: #ffc56f;
+  --c2: #d99838;
+  --c3: #9b5e05;
+  --ts: 50% / calc(var(--sz) * 12.8) calc(var(--sz) * 22);
+  background:
+		/*bottom*/ conic-gradient(
+        from 120deg at 50% 86.5%,
+        var(--c1) 0 120deg,
+        #fff0 0 360deg
+      )
+      var(--ts),
+    conic-gradient(from 120deg at 50% 86.5%, var(--c1) 0 120deg, #fff0 0 360deg)
+      var(--ts),
+    /*bottom dark*/
+      conic-gradient(from 120deg at 50% 74%, var(--c0) 0 120deg, #fff0 0 360deg)
+      var(--ts),
+    /*right*/
+      conic-gradient(
+        from 60deg at 60% 50%,
+        var(--c1) 0 60deg,
+        var(--c2) 0 120deg,
+        #fff0 0 360deg
+      )
+      var(--ts),
+    /*left*/
+      conic-gradient(
+        from 180deg at 40% 50%,
+        var(--c3) 0 60deg,
+        var(--c1) 0 120deg,
+        #fff0 0 360deg
+      )
+      var(--ts),
+    /*top dark*/
+      conic-gradient(from 0deg at 90% 35%, var(--c0) 0 90deg, #fff0 0 360deg)
+      var(--ts),
+    conic-gradient(from -90deg at 10% 35%, var(--c0) 0 90deg, #fff0 0 360deg)
+      var(--ts),
+    conic-gradient(from 0deg at 90% 35%, var(--c0) 0 90deg, #fff0 0 360deg)
+      var(--ts),
+    conic-gradient(from -90deg at 10% 35%, var(--c0) 0 90deg, #fff0 0 360deg)
+      var(--ts),
+    /*top*/
+      conic-gradient(
+        from -60deg at 50% 13.5%,
+        var(--c1) 0 120deg,
+        #fff0 0 360deg
+      )
+      var(--ts),
+    conic-gradient(from -60deg at 50% 13.5%, var(--c1) 0 120deg, #fff0 0 360deg)
+      var(--ts),
+    conic-gradient(
+        from -60deg at 50% 41%,
+        var(--c2) 0 60deg,
+        var(--c3) 0 120deg,
+        #fff0 0 360deg
+      )
+      var(--ts),
+    var(--c0);
+  padding: 150px 0 32px 0;
+}
+
+.userDisplay {
+  background-color: rgba(255, 255, 255, 0.15);
+  background-color: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(5px);
+  margin-top: 150px;
+  box-shadow: 2px 2px 4px 2px rgba(0, 0, 0, 0.6);
+  min-height: 250px;
+  margin: 0 auto;
+  max-width: 1440px;
+  display: flex;
+  align-items: center;
+  padding: 32px;
+  justify-content: space-between;
+  gap: 32px;
+}
+
+.userPic {
+  width: 200px;
+  border: 1px solid white;
+  aspect-ratio: 1/1;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  background: rgba(211, 211, 211, 0.3);
+}
+
+.savedBooks {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  background-color: rgba(255, 255, 255, 0.15);
+  background-color: rgba(255, 255, 255, 0.15);
+  gap: 16px;
+  backdrop-filter: blur(5px);
+  max-width: 1440px;
+  margin: 32px auto;
+}
