@@ -7,10 +7,6 @@
   border: none;
 }
 
-body {
-  height: 3000px;
-}
-
 nav {
   width: 100%;
   min-height: 100px;
@@ -70,6 +66,15 @@ nav {
   transition: all 0.2s ease-in-out;
 }
 
+.seeMore {
+  border: 1px solid black;
+  transition: all 0.2s ease-in-out;
+}
+
+.seeMore:hover {
+  border: none;
+}
+
 .btn:hover {
   background: rgb(128, 240, 206);
   /* border: 1px solid black; */
@@ -88,6 +93,51 @@ nav {
 
   align-items: center;
   justify-items: stretch;
+}
+
+.userInfo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* Adding styling for bookContainer */
+.bookContainer {
+  width: 1440px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 32px;
+  margin: 16px auto;
+}
+
+.card {
+  width: 100%;
+  height: 300px;
+  display: flex;
+  /* flex-direction: column; */
+  gap: 16px;
+  justify-items: flex-start;
+  padding: 16px;
+  border-radius: 8px;
+  background-color: rgba(255, 255, 255, 0.15);
+  background-color: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(5px);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  box-shadow: 2px 2px 4px 2px rgba(0, 0, 0, 0.6);
+}
+
+.card img {
+  /* width: 100%;
+  height: 100%; */
+  object-fit: contain;
+  /* object-position: center; */
+}
+.card div {
+  display: flex;
+  flex-direction: column;
+  /* align-items: center; */
+  gap: 12px;
+  justify-content: flex-end;
 }
 
 /* OverArching supers */

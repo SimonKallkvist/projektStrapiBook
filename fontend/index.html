@@ -13,7 +13,10 @@
     <nav>
       <!-- Create a navBar esq thing,  -->
       <a href="#" id="navLogo">SamuraiHeaven</a>
-      <div class="userInfo hidden"></div>
+      <div class="userInfo hidden">
+        <a href="#">Profile</a>
+        <button class="btn logOut">Logout</button>
+      </div>
     </nav>
     <header>
       <div class="header">
@@ -34,7 +37,7 @@
               id="password"
               placeholder="password"
             />
-            <button class="btn loginUser">Login</button>
+            <button class="btn loginUserBtn">Login</button>
             <button class="btn registerUserBtn">Register?</button>
           </div>
           <div class="registerUser hidden">
@@ -45,7 +48,7 @@
               placeholder="username"
             />
             <input
-              type="text"
+              type="email"
               name="email"
               id="registerEmail"
               placeholder="email"
@@ -67,5 +70,23 @@
         </div>
       </div>
     </header>
+    <main>
+      <div class="bookContainer">
+        <div class="card">
+          <img
+            src="http://localhost:1337/uploads/The_Shackles_Of_A_Name_a8db7c5e56.jpg"
+            alt=""
+          />
+          <div>
+            <h3>Title</h3>
+            <h4>Author</h4>
+            <p>Pages</p>
+            <button class="btn seeMore">See more</button>
+          </div>
+        </div>
+        <div class="card"></div>
+        <div class="card"></div>
+      </div>
+    </main>
   </body>
 </html>
