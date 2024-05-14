@@ -124,6 +124,7 @@ let loginUser = async (username, password) => {
     if (response.status === 200) {
       sessionStorage.setItem('token', response.data.jwt);
       sessionStorage.setItem('username', response.data.user.username);
+      sessionStorage.setItem('user', response.data.user.id);
       setLoginScreen();
     }
   } catch (error) {
@@ -228,5 +229,11 @@ let setStartScreen = async () => {
   }
 };
 
-setStartScreen();
-checkStorage();
+document.addEventListener(
+  'DOMContentLoaded',
+  function () {
+    setStartScreen();
+    checkStorage();
+  },
+  false
+);
