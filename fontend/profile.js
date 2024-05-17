@@ -36,9 +36,37 @@ let setProfile = async () => {
 
   userDisplay.append(userPic, amountOfBooks);
 
-  profile.data.books.map((book) => {
+  let savedBookList = profile.data.books;
+
+  // Write function for re-arraging the list
+  let sortCategory = document.querySelector('#sortCategory');
+  console.log(savedBookList);
+
+  sortCategory.addEventListener('change', () => {
+    savedBookList = sortTheList(savedBookList, sortCategory.value);
+  });
+
+  console.log(savedBookList);
+  savedBookList.map((book) => {
     renderSavedBooks(book);
   });
+};
+
+let sortTheList = (list, sort) => {
+  console.log(list, sort);
+  if (sort === 'title') {
+    // Return the list based on Titles
+    list.sort((a, b) => a.title.localeCompare(b.title));
+    console.log('Title change', list);
+    return list;
+  } else if (sort === 'author') {
+    // Return the list based on Author
+    list.sort((a, b) => a.author.localeCompare(b.author));
+    console.log('Author change', list);
+    return list;
+  } else {
+    // Return the list based on Ratings
+  }
 };
 
 // Render the saved books

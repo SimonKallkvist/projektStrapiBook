@@ -114,27 +114,42 @@ let createUser = async (username, email, password) => {
 
 // Login User checking towards strapi and storing the Username and the data
 let loginUser = async (username, password) => {
-  console.log(username, password);
   try {
     let response = await axios.post('http://localhost:1337/api/auth/local', {
       identifier: username,
       password: password,
     });
-    console.log(response);
     if (response.status === 200) {
       sessionStorage.setItem('token', response.data.jwt);
       sessionStorage.setItem('username', response.data.user.username);
       sessionStorage.setItem('user', response.data.user.id);
       setLoginScreen();
+      setUserFavoriteBooks(response.data.user.id);
+      setStartScreen();
     }
   } catch (error) {
     console.log('Error: ' + error);
+    alert('invalid Username or Password!');
+  }
+};
+
+let setUserFavoriteBooks = async (userId) => {
+  try {
+    let response = await axios.get(
+      `http://localhost:1337/api/users/${userId}?populate=*`
+    );
+    let favoriteBooksId = Array.from(response.data.books);
+    console.log(favoriteBooksId);
+    sessionStorage.setItem('bookId', JSON.stringify(favoriteBooksId));
+  } catch (error) {
+    console.log('error: ' + error);
   }
 };
 
 let logoutUser = () => {
   sessionStorage.clear();
   checkStorage();
+  setStartScreen();
 };
 
 // When looged in show btns in nav and set username
@@ -192,10 +207,39 @@ let checkStorage = () => {
 let setStartScreen = async () => {
   let book = await getData('http://localhost:1337/api/books?populate=*');
   let books = Array.from(book.data.data);
+  //   console.log(books);
+
+  let sortCategory = document.querySelector('#sortCategory');
   console.log(books);
 
-  let bookContainer = document.querySelector('.bookContainer');
+  sortCategory.addEventListener('change', () => {
+    sortTheList(books, sortCategory.value);
+  });
 
+  renderSavedBooks(books);
+};
+
+// sortthe List
+let sortTheList = (list, sort) => {
+  console.log(list, sort);
+  if (sort === 'title') {
+    // Return the list based on Titles
+    list.sort((a, b) => a.attributes.title.localeCompare(b.attributes.title));
+    console.log('Title change', list);
+    renderSavedBooks(list);
+  } else if (sort === 'author') {
+    // Return the list based on Author
+    list.sort((a, b) => a.attributes.author.localeCompare(b.attributes.author));
+    console.log('Author change', list);
+    renderSavedBooks(list);
+  } else {
+    // Return the list based on Ratings
+  }
+};
+
+let renderSavedBooks = (books) => {
+  let bookContainer = document.querySelector('.bookContainer');
+  bookContainer.innerHTML = '';
   if (books) {
     books.map((book) => {
       let card = document.createElement('div');
@@ -205,6 +249,47 @@ let setStartScreen = async () => {
       bookCover.src =
         'http://localhost:1337' + book.attributes.cover.data.attributes.url;
       let cardDiv = document.createElement('div');
+
+      if (sessionStorage.getItem('token')) {
+        let favBokId = JSON.parse(sessionStorage.getItem('bookId'));
+
+        let bookmarkBtn = document.createElement('div');
+        bookmarkBtn.classList.add('bookmark');
+
+        let bookIcon = document.createElement('i');
+        bookIcon.setAttribute('favorite', 'false');
+
+        if (favBokId.some((ide) => ide.id === book.id)) {
+          bookIcon.classList.add('fa-solid', 'fa-bookmark');
+          bookIcon.setAttribute('favorite', 'true');
+        } else {
+          bookIcon.classList.add('fa-regular', 'fa-bookmark');
+          bookIcon.setAttribute('favorite', 'false');
+        }
+
+        bookmarkBtn.append(bookIcon);
+
+        // CHange the bookmark and add or delete from users favorite books
+
+        bookmarkBtn.addEventListener('click', () => {
+          let isFavorite = bookIcon.getAttribute('favorite') === 'true';
+          if (isFavorite) {
+            bookIcon.setAttribute('favorite', 'false');
+            bookIcon.classList.add('fa-regular');
+            bookIcon.classList.remove('fa-solid');
+            // kalla på funktion för att ta bort från favoritlistan
+            removeFavoriteBook(book.id);
+          } else {
+            bookIcon.setAttribute('favorite', 'true');
+            bookIcon.classList.remove('fa-regular');
+            bookIcon.classList.add('fa-solid');
+            // kalla på funktion för att sätta en ny favoritbok
+            setFavoriteBook(book.id);
+          }
+        });
+
+        cardDiv.append(bookmarkBtn);
+      }
 
       let title = document.createElement('h3');
       title.innerText = book.attributes.title;
@@ -229,11 +314,121 @@ let setStartScreen = async () => {
   }
 };
 
-document.addEventListener(
-  'DOMContentLoaded',
-  function () {
-    setStartScreen();
-    checkStorage();
-  },
-  false
-);
+let setFavoriteBook = async (bookId) => {
+  let token = sessionStorage.getItem('token');
+  console.log(token, sessionStorage.getItem('user'), bookId);
+  let bookResponseFull;
+  let userBookList;
+  // Getting all the books of the user
+  try {
+    let userBooks = await axios.get(
+      `http://localhost:1337/api/users/${sessionStorage.getItem(
+        'user'
+      )}?populate=*`
+    );
+    userBookList = userBooks.data.books;
+    console.log(userBookList);
+  } catch (error) {
+    console.log('Error: ' + error);
+  }
+
+  //Getting the specific book
+  try {
+    let bookResponse = await axios.get(
+      `http://localhost:1337/api/books/${bookId}?populate=*`
+    );
+    bookResponseFull = bookResponse.data.data;
+  } catch (error) {
+    console.log('Error: ' + error);
+  }
+
+  userBookList.push(bookResponseFull);
+  // Adding the book to the user
+  try {
+    let response = await axios.put(
+      `http://localhost:1337/api/users/${sessionStorage.getItem('user')}`,
+      {
+        books: userBookList,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    console.log(response);
+  } catch (error) {
+    console.log('Error: ' + error.response.data);
+  }
+
+  // Update the sessionStorage with newly added book
+  sessionStorage.removeItem('bookId');
+  sessionStorage.setItem('bookId', JSON.stringify(userBookList));
+};
+
+//Removing the book from the user
+let removeFavoriteBook = async (bookId) => {
+  let token = sessionStorage.getItem('token');
+  // console.log(token, sessionStorage.getItem('user'), bookId);
+  let bookResponseFull;
+  let userBookList;
+  // Getting all the books of the user
+  try {
+    let userBooks = await axios.get(
+      `http://localhost:1337/api/users/${sessionStorage.getItem(
+        'user'
+      )}?populate=*`
+    );
+    userBookList = userBooks.data.books;
+    console.log(userBookList);
+  } catch (error) {
+    console.log('Error: ' + error);
+  }
+
+  console.log(userBookList);
+
+  //Getting the specific book
+  try {
+    let bookResponse = await axios.get(
+      `http://localhost:1337/api/books/${bookId}`
+    );
+    bookResponseFull = bookResponse.data.data;
+  } catch (error) {
+    console.log('Error: ' + error);
+  }
+
+  console.log(bookResponseFull);
+  userBookList = userBookList.filter((item) => item.id !== bookResponseFull.id);
+  console.log('Updated userBookList:', userBookList);
+
+  console.log(userBookList);
+
+  // Adding the book to the user
+  try {
+    let response = await axios.put(
+      `http://localhost:1337/api/users/${sessionStorage.getItem('user')}`,
+      {
+        books: userBookList,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    console.log(response);
+  } catch (error) {
+    console.log('Error: ' + error.response.data);
+  }
+  sessionStorage.removeItem('bookId');
+  sessionStorage.setItem('bookId', JSON.stringify(userBookList));
+};
+
+// document.addEventListener(
+//   'DOMContentLoaded',
+//   function () {
+setStartScreen();
+checkStorage();
+//   },
+//   false
+// );
