@@ -379,13 +379,43 @@ export interface ApiBookBook extends Schema.CollectionType {
     pages: Attribute.BigInteger;
     date: Attribute.Date;
     cover: Attribute.Media;
-    rating: Attribute.Integer;
+    rating: Attribute.Integer & Attribute.DefaultTo<1>;
     description: Attribute.Text;
+    amountOfReview: Attribute.Integer & Attribute.DefaultTo<0>;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
     createdBy: Attribute.Relation<'api::book.book', 'oneToOne', 'admin::user'> &
       Attribute.Private;
     updatedBy: Attribute.Relation<'api::book.book', 'oneToOne', 'admin::user'> &
+      Attribute.Private;
+  };
+}
+
+export interface ApiThemeTheme extends Schema.SingleType {
+  collectionName: 'themes';
+  info: {
+    singularName: 'theme';
+    pluralName: 'themes';
+    displayName: 'theme';
+  };
+  options: {
+    draftAndPublish: false;
+  };
+  attributes: {
+    background: Attribute.String;
+    createdAt: Attribute.DateTime;
+    updatedAt: Attribute.DateTime;
+    createdBy: Attribute.Relation<
+      'api::theme.theme',
+      'oneToOne',
+      'admin::user'
+    > &
+      Attribute.Private;
+    updatedBy: Attribute.Relation<
+      'api::theme.theme',
+      'oneToOne',
+      'admin::user'
+    > &
       Attribute.Private;
   };
 }
@@ -831,6 +861,7 @@ declare module '@strapi/types' {
       'admin::transfer-token': AdminTransferToken;
       'admin::transfer-token-permission': AdminTransferTokenPermission;
       'api::book.book': ApiBookBook;
+      'api::theme.theme': ApiThemeTheme;
       'plugin::upload.file': PluginUploadFile;
       'plugin::upload.folder': PluginUploadFolder;
       'plugin::content-releases.release': PluginContentReleasesRelease;

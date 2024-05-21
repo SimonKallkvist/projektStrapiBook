@@ -42,9 +42,9 @@ let setProfile = async () => {
   let sortCategory = document.querySelector('#sortCategory');
   console.log(savedBookList);
 
-  sortCategory.addEventListener('change', () => {
-    savedBookList = sortTheList(savedBookList, sortCategory.value);
-  });
+  // sortCategory.addEventListener('change', () => {
+  //   savedBookList = sortTheList(savedBookList, sortCategory.value);
+  // });
 
   console.log(savedBookList);
   savedBookList.map((book) => {

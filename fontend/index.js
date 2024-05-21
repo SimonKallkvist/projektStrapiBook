@@ -28,7 +28,7 @@ document.querySelector('.createUser').addEventListener('click', () => {
   let password = document.querySelector('#registerPassword');
   let repeatPassword = document.querySelector('#repeatPassword');
 
-  console.log(userName, email, password, repeatPassword);
+  // console.log(userName, email, password, repeatPassword);
 
   if (userName.value && email.value && password.value && repeatPassword.value) {
     if (password.value === repeatPassword.value) {
@@ -94,7 +94,7 @@ document.querySelector('.loginUserBtn').addEventListener('click', () => {
 
 // Create the user and add them to Strapi
 let createUser = async (username, email, password) => {
-  console.log(username, email, password);
+  // console.log(username, email, password);
   try {
     let response = await axios.post(
       'http://localhost:1337/api/auth/local/register',
@@ -105,11 +105,15 @@ let createUser = async (username, email, password) => {
         // role: 'authen',
       }
     );
-    console.log(response);
+    // console.log(response);
+    // if (response.status === 200) {
+    //   showSnack();
+    // }
   } catch (error) {
     console.log('Error: ' + error.message);
     alert('No user was added, try again and check!');
   }
+  showSnack('User created!');
 };
 
 // Login User checking towards strapi and storing the Username and the data
@@ -123,6 +127,7 @@ let loginUser = async (username, password) => {
       sessionStorage.setItem('token', response.data.jwt);
       sessionStorage.setItem('username', response.data.user.username);
       sessionStorage.setItem('user', response.data.user.id);
+      showSnack('you was logged in');
       setLoginScreen();
       setUserFavoriteBooks(response.data.user.id);
       setStartScreen();
@@ -139,7 +144,7 @@ let setUserFavoriteBooks = async (userId) => {
       `http://localhost:1337/api/users/${userId}?populate=*`
     );
     let favoriteBooksId = Array.from(response.data.books);
-    console.log(favoriteBooksId);
+    // console.log(favoriteBooksId);
     sessionStorage.setItem('bookId', JSON.stringify(favoriteBooksId));
   } catch (error) {
     console.log('error: ' + error);
@@ -221,7 +226,7 @@ let setStartScreen = async () => {
 
 // sortthe List
 let sortTheList = (list, sort) => {
-  console.log(list, sort);
+  // console.log(list, sort);
   if (sort === 'title') {
     // Return the list based on Titles
     list.sort((a, b) => a.attributes.title.localeCompare(b.attributes.title));
@@ -234,6 +239,9 @@ let sortTheList = (list, sort) => {
     renderSavedBooks(list);
   } else {
     // Return the list based on Ratings
+    list.sort((a, b) => b.attributes.rating - a.attributes.rating);
+    console.log('Rating change', list);
+    renderSavedBooks(list);
   }
 };
 
@@ -279,12 +287,14 @@ let renderSavedBooks = (books) => {
             bookIcon.classList.remove('fa-solid');
             // kalla på funktion för att ta bort från favoritlistan
             removeFavoriteBook(book.id);
+            showSnack('Book removed from favorites');
           } else {
             bookIcon.setAttribute('favorite', 'true');
             bookIcon.classList.remove('fa-regular');
             bookIcon.classList.add('fa-solid');
             // kalla på funktion för att sätta en ny favoritbok
             setFavoriteBook(book.id);
+            showSnack('Book added to favorites');
           }
         });
 
@@ -303,15 +313,145 @@ let renderSavedBooks = (books) => {
       let year = document.createElement('p');
       year.innerText = 'Release: ' + book.attributes.date;
 
+      let ratingBox = document.createElement('div');
+
+      let rating = document.createElement('p');
+      rating.innerText = `Rating: ${book.attributes.rating} / 10`;
+
+      let selectRating = document.createElement('select');
+      selectRating.id = 'selectRating';
+      let defaultRating = document.createElement('option');
+      defaultRating.value = null;
+      defaultRating.innerText = 'Give a rating on this book?';
+
+      selectRating.append(defaultRating);
+
+      for (i = 0; i <= 9; i++) {
+        let ratingOption = document.createElement('option');
+        ratingOption.value = i + 1;
+        ratingOption.innerText = `${i + 1} stars`;
+        selectRating.append(ratingOption);
+      }
+
+      ratingBox.append(rating, selectRating);
+
+      selectRating.addEventListener('change', () => {
+        updateRating(book, selectRating);
+      });
+
       let seeMoreBtn = document.createElement('button');
       seeMoreBtn.classList.add('btn', 'seeMore');
       seeMoreBtn.innerText = 'See more';
 
-      cardDiv.append(title, author, pages, year, seeMoreBtn);
+      cardDiv.append(title, author, ratingBox, pages, year, seeMoreBtn);
       card.append(bookCover, cardDiv);
       bookContainer.append(card);
+
+      //To show the module
+      seeMoreBtn.addEventListener('click', () => {
+        showCardModule(book);
+      });
     });
   }
+};
+
+//Update book rating
+let updateRating = async (book, bookRating) => {
+  let token = sessionStorage.getItem('token');
+  console.log('Trying to change rating', bookRating.value);
+
+  console.log(book, book.attributes.amountOfReview);
+  // console.log(newRating, book.attributes.amountOfReview);
+  // Calculate new rating then send it
+  let oldRating = parseInt(book.attributes.rating);
+  let updateRating = parseInt(bookRating.value);
+  let divider = parseInt(book.attributes.amountOfReview);
+  let upDivider = oldRating * divider;
+  let newRating;
+  if (book.attributes.amountOfReview > 0) {
+    newRating = parseInt((upDivider + updateRating) / (divider + 1));
+    console.log(updateRating, oldRating, divider, newRating);
+    console.log('more than 1 review', book.attributes.amountOfReview);
+  } else {
+    console.log('No previous reviews');
+    newRating = updateRating;
+  }
+
+  if (newRating >= 10) {
+    newRating = 10;
+  } else if (newRating <= 1) {
+    newRating++;
+  }
+
+  try {
+    let response = await axios.put(
+      `http://localhost:1337/api/books/${book.id}`,
+
+      { data: { rating: newRating, amountOfReview: divider + 1 } },
+
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    setStartScreen();
+  } catch (error) {
+    console.log('Error: ' + error);
+  }
+  // console.log(book.rating);
+};
+
+let showCardModule = (book) => {
+  console.log('show the card module');
+  let module = document.createElement('div');
+  module.classList.add('popUpBook');
+
+  let blur = document.createElement('div');
+  blur.classList.add('blur');
+
+  let bookSpecs = document.createElement('div');
+  bookSpecs.classList.add('bookSpecs');
+
+  let closeBtn = document.createElement('button');
+  closeBtn.innerText = 'Close modal';
+  closeBtn.classList.add('btn');
+  closeBtn.addEventListener('click', () => {
+    // document.querySelector('body').remove('popUpBook');
+    module.remove();
+  });
+
+  let bookCover = document.createElement('img');
+  bookCover.src =
+    'http://localhost:1337' + book.attributes.cover.data.attributes.url;
+
+  let bookSp = document.createElement('div');
+  bookSp.classList.add('bookSp');
+
+  let title = document.createElement('h3');
+  title.innerText = book.attributes.title;
+
+  let author = document.createElement('h4');
+  author.innerText = book.attributes.author;
+
+  let pages = document.createElement('p');
+  pages.innerText = book.attributes.pages + ' pages';
+
+  let year = document.createElement('p');
+  year.innerText = 'Release: ' + book.attributes.date;
+
+  let rating = document.createElement('p');
+  rating.innerText = `Rating: ${book.attributes.rating} / 10`;
+
+  let desc = document.createElement('p');
+  desc.innerText = book.attributes.description;
+
+  bookSp.append(title, author, pages, year, rating, desc, closeBtn);
+
+  bookSpecs.append(bookCover, bookSp);
+  module.append(blur, bookSpecs);
+
+  document.querySelector('body').append(module);
 };
 
 let setFavoriteBook = async (bookId) => {
@@ -424,11 +564,34 @@ let removeFavoriteBook = async (bookId) => {
   sessionStorage.setItem('bookId', JSON.stringify(userBookList));
 };
 
+let showSnack = (message) => {
+  snackBar = document.querySelector('.snackBar');
+  let snackMessage = document.querySelector('.snackMessage');
+  snackBar.classList.add('slideLeft');
+  snackMessage.innerText = `Success, ${message}!`;
+
+  setInterval(() => {
+    snackBar.classList.add('slideRight');
+    snackBar.classList.remove('slideRight', 'slideLeft');
+  }, 1500);
+};
+
+let setBackground = async () => {
+  try {
+    let response = await axios.get('http://localhost:1337/api/theme');
+    console.log(response.data.data.attributes.background);
+    document.querySelector('body').style.background =
+      response.data.data.attributes.background;
+  } catch (error) {
+    console.log('Error: ' + error);
+  }
+};
 // document.addEventListener(
 //   'DOMContentLoaded',
 //   function () {
 setStartScreen();
 checkStorage();
+setBackground();
 //   },
 //   false
 // );

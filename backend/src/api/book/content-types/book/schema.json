@@ -33,10 +33,15 @@
       ]
     },
     "rating": {
-      "type": "integer"
+      "type": "integer",
+      "default": 1
     },
     "description": {
       "type": "text"
+    },
+    "amountOfReview": {
+      "type": "integer",
+      "default": 0
     }
   }
 }
