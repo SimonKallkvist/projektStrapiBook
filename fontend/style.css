@@ -393,7 +393,8 @@ nav {
   background: rgba(211, 211, 211, 0.3);
 }
 
-.savedBooks {
+.savedBooks,
+.ratedBooks {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   background-color: rgba(255, 255, 255, 0.15);

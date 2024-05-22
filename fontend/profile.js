@@ -46,9 +46,14 @@ let setProfile = async () => {
   //   savedBookList = sortTheList(savedBookList, sortCategory.value);
   // });
 
+  let savedBooks = document.querySelector('.savedBooks');
+  let savedH2 = document.createElement('h2');
+  savedH2.innerText = 'Bookmarked books';
+  savedBooks.append(savedH2);
+
   console.log(savedBookList);
   savedBookList.map((book) => {
-    renderSavedBooks(book);
+    renderSavedBooks(book, savedBooks);
   });
 };
 
@@ -70,9 +75,9 @@ let sortTheList = (list, sort) => {
 };
 
 // Render the saved books
-let renderSavedBooks = async (book) => {
+let renderSavedBooks = async (book, savedBooks) => {
   //   console.log(book);
-  let savedBooks = document.querySelector('.savedBooks');
+
   let card = document.createElement('div');
   card.classList.add('card');
 
