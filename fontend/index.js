@@ -359,6 +359,18 @@ let renderSavedBooks = (books) => {
 let updateRating = async (book, bookRating) => {
   let token = sessionStorage.getItem('token');
   console.log('Trying to change rating', bookRating.value);
+  let ratedBooks = sessionStorage.getItem('ratedBooks')
+    ? JSON.parse(sessionStorage.getItem('ratedBooks'))
+    : [];
+
+  if (ratedBooks) {
+    if (ratedBooks.some((booker) => booker.id == book.id)) {
+      alert('Already a rated book');
+    } else {
+      ratedBooks.push(book);
+      sessionStorage.setItem('ratedBooks', JSON.stringify(ratedBooks));
+    }
+  }
 
   console.log(book, book.attributes.amountOfReview);
   // console.log(newRating, book.attributes.amountOfReview);

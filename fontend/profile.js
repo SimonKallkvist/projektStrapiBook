@@ -47,6 +47,7 @@ let setProfile = async () => {
   // });
 
   let savedBooks = document.querySelector('.savedBooks');
+  let ratedBooksContainer = document.querySelector('.ratedBooks');
   let savedH2 = document.createElement('h2');
   savedH2.innerText = 'Bookmarked books';
   savedBooks.append(savedH2);
@@ -55,6 +56,16 @@ let setProfile = async () => {
   savedBookList.map((book) => {
     renderSavedBooks(book, savedBooks);
   });
+
+  let ratedBooks = sessionStorage.getItem('ratedBooks')
+    ? JSON.parse(sessionStorage.getItem('ratedBooks'))
+    : [];
+
+  if (ratedBooks.length > 0) {
+    ratedBooks.map((book) => {
+      renderRatedBooks(book, ratedBooksContainer);
+    });
+  }
 };
 
 let sortTheList = (list, sort) => {
@@ -104,6 +115,36 @@ let renderSavedBooks = async (book, savedBooks) => {
   cardDiv.append(title, author, pages, year);
   card.append(bookCover, cardDiv);
   savedBooks.append(card);
+};
+let renderRatedBooks = async (book, ratedBooks) => {
+  console.log(book);
+
+  let card = document.createElement('div');
+  card.classList.add('card');
+
+  let bookSrc = await getData(
+    'http://localhost:1337/api/books/' + book.id + '?populate=*'
+  );
+  let bookCover = document.createElement('img');
+  bookCover.src =
+    'http://localhost:1337' +
+    bookSrc.data.data.attributes.cover.data.attributes.url;
+  let cardDiv = document.createElement('div');
+  let title = document.createElement('h3');
+  title.innerText = book.attributes.title;
+
+  let author = document.createElement('h4');
+  author.innerText = book.attributes.author;
+
+  let pages = document.createElement('p');
+  pages.innerText = book.attributes.pages + ' pages';
+
+  let year = document.createElement('p');
+  year.innerText = 'Release: ' + book.attributes.date;
+
+  cardDiv.append(title, author, pages, year);
+  card.append(bookCover, cardDiv);
+  ratedBooks.append(card);
 };
 
 //Setup the navBar
